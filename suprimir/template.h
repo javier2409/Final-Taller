@@ -1,3 +1,8 @@
+/*
+Implemente una función C++ denominada Suprimir que reciba dos listas de elementos y devuelva una
+nueva lista con los elementos de la primera que no están en la segunda:
+*/
+
 #include <list>
 #include <algorithm>
 

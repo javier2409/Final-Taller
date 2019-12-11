@@ -1,3 +1,9 @@
+/*
+Escriba un programa que reciba un listado de enteros ‘list’ y un archivo abierto ‘out’ 
+e imprima en el archivo aquellos números que sean pares. Debido a la longitud del listado 
+se requiere el uso demultithreading para brindar una solución óptima.
+*/
+
 #include <list>
 #include <thread>
 #include <fstream>
@@ -38,7 +44,8 @@ static int pop(){
 
 static void push_nums(std::list<int>& nums){
     for (auto num : nums){
-        push(num);
+        if (num % 2 == 0)
+            push(num);
     }
     std::lock_guard<std::mutex> lock(mtx);
     x.closed = true;
@@ -60,15 +67,20 @@ static void pop_nums(std::ofstream& file){
 }
 
 static void func(std::list<int>& numbers, std::ofstream& file){
-    auto h1 = std::thread(push_nums, std::ref(numbers));
-    std::list<std::thread> threads;
 
+    //lanzo 1 thread que lee secuencialmente la lista
+    auto h1 = std::thread(push_nums, std::ref(numbers));
+
+    //lanzo 'n' threads que esperan numeros y los escriben al archivo
+    std::list<std::thread> threads;
     for (auto _ : std::list<int>({1,2,3,4,5,6,7,8,9,10})){
         threads.emplace_back(pop_nums, std::ref(file));
     }
 
+    //joineo thread lector
     h1.join();
     
+    //joineo threads escritores
     for (auto& thread : threads){
         thread.join();
     }

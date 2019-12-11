@@ -17,6 +17,13 @@ void add_uneven(){
     }
 }
 
+/*
+Escriba un programa que imprima por salida estándar los números entre 1 y 100, en orden ascendente.
+Se pide que los números sean contabilizados por una variable global única y que los pares sean escritos
+por un hilo mientras que los impares por otro. Contemple la correcta sincronización entre hilos y la
+liberación de los recursos utilizados.
+*/
+
 void add_even(){
     std::unique_lock<std::mutex> lock(mtx);
     while (x < 100){
