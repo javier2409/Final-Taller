@@ -86,11 +86,7 @@ static void func(std::list<int>& numbers, std::ofstream& file){
     }
 }
 
-extern int (*f)();
-
 int main(){
-    int* (*C)[5];
-
     std::list<int> numbers;
     int i = 0;
     while (i < 1000){
