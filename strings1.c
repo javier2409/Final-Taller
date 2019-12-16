@@ -26,7 +26,7 @@ void replicar (const char* src, char* dst, int i1, int i2, int q){
 }
 
 int main (){
-    const char* src = "Hola mina xd";
+    const char* src = "hola como estas?";
     char dst[50];
     memset(dst, 0, 50);
     replicar(src, dst, 5, 9, 3);
