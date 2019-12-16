@@ -21,5 +21,5 @@ int main(int argc, char** argv){
     QApplication app(argc, argv);
     MainWidget win;
     win.show();
-    app.exec();
+    return app.exec();
 }

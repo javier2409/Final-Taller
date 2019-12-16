@@ -7,8 +7,7 @@ de ‘1’, ‘2’ y ‘3’ (con un separador antes y uno después) por ‘uno
 /*
 NOTA: Yo interpreto que hay que reemplazar todos los " 1 ", " 2 " y " 3 " (osea con un espacio antes
 y uno despues) por " uno ", " dos ", " tres ", osea que si encuentro "abc1abc" no hago nada, en cambio
-"abc 1 abc" lo reemplazo por "abc uno abc". Eso complica bastante las cosas con respecto a si no considerara
-si tiene o no espacios antes, asi que no estoy seguro de que sea eso lo que piden.
+"abc 1 abc" lo reemplazo por "abc uno abc". Eso complica bastante las cosas con respecto a si no considerara si tiene o no espacios antes, asi que no estoy seguro de que sea eso lo que piden.
 */
 
 #include <stdio.h>

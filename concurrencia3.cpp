@@ -18,6 +18,7 @@ posiciones distintas del vector y hacer eso es thread-safe.
 
 #define NTHREADS 2
 
+//Esta funcion es la que va a ejecutar cada thread
 void calc_powers(std::vector<int>& vec, std::vector<int>& res, int n_thread){
     for (int i = n_thread; i < vec.size(); i+=NTHREADS){
         int power = pow(2, vec[i]);
