@@ -10,53 +10,54 @@ se requiere el uso demultithreading para brindar una solución óptima.
 #include <mutex>
 #include <condition_variable>
 
-typedef struct{
-    int num;
-    bool present;
-    bool closed;
-} queue;
+class ProtectedQueue{
+        int num;
+        bool present;
+        bool closed;
+        std::mutex mtx;
+        std::condition_variable pop_cv, push_cv;
+    public:
+        void push(int num){
+            std::unique_lock<std::mutex> lock(mtx);
+            while (present)
+                push_cv.wait(lock);
+            this->num = num;
+            present = true;
+            pop_cv.notify_all();
+        }
+        int pop(){
+            std::unique_lock<std::mutex> lock(mtx);
+            while (!present and !closed)
+                pop_cv.wait(lock);
+            if (closed and !present)
+                throw std::runtime_error("queue closed");
+            present = false;
+            int retval = num;
+            push_cv.notify_all();
+            return retval;
+        }
+        void close(){
+            std::lock_guard<std::mutex> lock(mtx);
+            closed = true;
+            pop_cv.notify_all();
+        }
+};
 
-static queue x = queue{0, false, false};
-static std::mutex mtx;
 static std::mutex file_mtx;
-static std::condition_variable pop_cv, push_cv;
 
-static void push(int num){
-    std::unique_lock<std::mutex> lock(mtx);
-    while (x.present)
-        push_cv.wait(lock);
-    x.num = num;
-    x.present = true;
-    pop_cv.notify_all();
-}
-
-static int pop(){
-    std::unique_lock<std::mutex> lock(mtx);
-    while (!x.present and !x.closed)
-        pop_cv.wait(lock);
-    if (x.closed and !x.present)
-        throw std::runtime_error("queue closed");
-    x.present = false;
-    int retval = x.num;
-    push_cv.notify_all();
-    return retval;
-}
-
-static void push_nums(std::list<int>& nums){
+static void push_nums(std::list<int>& nums, ProtectedQueue& queue){
     for (auto num : nums){
         if (num % 2 == 0)
-            push(num);
+            queue.push(num);
     }
-    std::lock_guard<std::mutex> lock(mtx);
-    x.closed = true;
-    pop_cv.notify_all();
+    queue.close();
 }
 
-static void pop_nums(std::ofstream& file){
+static void pop_nums(std::ofstream& file, ProtectedQueue& queue){
     int num;
     while (true){
         try{
-            num = pop();
+            num = queue.pop();
             std::lock_guard<std::mutex> lock(file_mtx);
             file << num << "\n";
         } catch (std::runtime_error& e){
@@ -67,14 +68,15 @@ static void pop_nums(std::ofstream& file){
 }
 
 static void func(std::list<int>& numbers, std::ofstream& file){
+    ProtectedQueue queue;
 
     //lanzo 1 thread que lee secuencialmente la lista
-    auto h1 = std::thread(push_nums, std::ref(numbers));
+    auto h1 = std::thread(push_nums, std::ref(numbers), std::ref(queue));
 
     //lanzo 'n' threads que esperan numeros y los escriben al archivo
     std::list<std::thread> threads;
     for (auto _ : std::list<int>({1,2,3,4,5,6,7,8,9,10})){
-        threads.emplace_back(pop_nums, std::ref(file));
+        threads.emplace_back(pop_nums, std::ref(file), std::ref(queue));
     }
 
     //joineo thread lector
