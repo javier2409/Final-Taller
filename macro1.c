@@ -8,7 +8,7 @@ Al imprimir el mensaje, se debe incluir el nombre del archivo C. Ejemplo de uso:
 #include <stdio.h>
 
 #define ASSERT(condition, msg) {\
-    if (!condition){\
+    if (!(condition)){\
         printf("Assertion error in file: %s \n", __FILE__);\
         printf("%s \n", msg);\
     }\
