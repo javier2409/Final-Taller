@@ -14,11 +14,12 @@ class MainWindow : public QWidget{
             std::cout << this->edit.toPlainText().toStdString() << std::endl;
         }
     public:
-        MainWindow(QWidget* parent = 0) : QWidget(parent){
+        MainWindow(QWidget* parent = 0) : QWidget(parent), btn("Imprimir"){
             QObject::connect(&btn, SIGNAL(clicked()), this, SLOT(showText()));
             QGridLayout* layout = new QGridLayout;
             layout->addWidget(&btn, 0, 0);
             layout->addWidget(&edit, 0, 1);
+            btn.setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
             setLayout(layout);
         }
 };
