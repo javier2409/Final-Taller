@@ -1,5 +1,7 @@
-extern int a;
+#include <stdio.h>
 
-void externfunc(){
-    a = 10;
+static void externfunc(){
+    printf("funcion externa");
 }
+
+void (*func)() = externfunc;
